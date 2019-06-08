@@ -599,7 +599,7 @@ s1      = s.P.Hap & s.C.Hap; tNA(s1)
 ip      = c(1,3,6, 8, 11:12, 24:38, 39:44)
 cbind(xx[,ip], s1, s.P.Hap, s.C.Hap)
 cbind(xx[s1,ip])
-fn = paste(RESULTS_dir, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.", ALG, "..KSA.Annotated.ov.Chr_order.rare.csv", sep="")
+fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.", ALG, "..KSA.Annotated.ov.Chr_order.rare.csv", sep="")
 write.csv(xx[s1,], fn, row.names=F);  system(paste("open ", fn)) 
 } ## ---- used to produce output spreadsheets
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -623,7 +623,7 @@ ip      = c(1,3,6, 8, 11:12, 24:38, 39:44)
 cbind(xx[, ip], s1, s0, s.P.Hap, s.C.Hap)[1:5,]
 xx      = cbind(xx, s1, s0, s.P.Hap, s.C.Hap)
 if(0) {
-  fn = paste(RESULTS_dir, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.", ALG, "..KSA.Annotated.ov.Chr_order.rare_flags.csv", sep="")
+  fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.", ALG, "..KSA.Annotated.ov.Chr_order.rare_flags.csv", sep="")
   write.csv(xx, fn, row.names=F);  system(paste("open ", fn)) 
 } ## ---- output spreadsheet
 }

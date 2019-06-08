@@ -9,7 +9,7 @@ load("~/Documents/shared/proj/PASS_CNV/Analysis/Code/PASS_CNV_2017_collect_for_a
 rm(list=setdiff(ls(), save_object_list))
 
 # Modify/introdduce running parameters for local execution  
-RESULTS_dir_local = "Results/"
+Results_dir_local = "Results/"
 
 # Overlap subs
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -138,21 +138,21 @@ xx_L = PASS_CNV.overlap_sum_cov(CNV_P, NULL, db_levl = 0)
 CNV_P = cbind(CNV_P, ov_size_w=xx_L$xx[,1], ov_frac_w=xx_L$xx[,2], ov_n=xx_L$ov_n, ov_ID=xx_L$ov_ID)
 
 ## Output result
-# fn = paste(RESULTS_dir_local, "2018_07_Klaus_Annotations/v00_2018_06_15_Cuts.I..KSA.Annotated.ov.csv", sep="")
-fn = paste(RESULTS_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.I..KSA.Annotated.ov.csv", sep="")
+# fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_06_15_Cuts.I..KSA.Annotated.ov.csv", sep="")
+fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.I..KSA.Annotated.ov.csv", sep="")
 write.csv(CNV_I, fn, row.names=F);  system(paste("open ", fn)) 
-# fn = paste(RESULTS_dir_local, "2018_07_Klaus_Annotations/v00_2018_06_15_Cuts.P..KSA.Annotated.ov.csv", sep="")
-fn = paste(RESULTS_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.P..KSA.Annotated.ov.csv", sep="")
+# fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_06_15_Cuts.P..KSA.Annotated.ov.csv", sep="")
+fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.P..KSA.Annotated.ov.csv", sep="")
 write.csv(CNV_P, fn, row.names=F);  system(paste("open ", fn)) 
 
 ## order & Output result
 uPos = 3e8*CNV_I[,"Chr"] + CNV_I[,"Start"]
 o = order(uPos);    # CNV_I[o,"Chr"]
-fn = paste(RESULTS_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.I..KSA.Annotated.ov.Chr_order.csv", sep="")
+fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.I..KSA.Annotated.ov.Chr_order.csv", sep="")
 write.csv(CNV_I[o,], fn, row.names=F);  system(paste("open ", fn)) 
 uPos = 3e8*CNV_P[,"Chr"] + CNV_P[,"Start"]
 o = order(uPos);    # CNV_P[o,"Chr"]
-fn = paste(RESULTS_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.P..KSA.Annotated.ov.Chr_order.csv", sep="")
+fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.P..KSA.Annotated.ov.Chr_order.csv", sep="")
 write.csv(CNV_P[o,], fn, row.names=F);  system(paste("open ", fn)) 
 
 
