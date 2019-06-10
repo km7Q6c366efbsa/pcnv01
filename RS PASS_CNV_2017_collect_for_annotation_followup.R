@@ -156,7 +156,7 @@ fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.P..
 write.csv(CNV_P[o,], fn, row.names=F);  system(paste("open ", fn)) 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-# Continuation from      PASS_CNV_2017_collect_for_annotation_followup.R  small change
+# Continuation from      PASS_CNV_2017_collect_for_annotation_followup.R 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 # ---- ---- output only confirmed
 if(1) {
