@@ -155,6 +155,191 @@ o = order(uPos);    # CNV_P[o,"Chr"]
 fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.P..KSA.Annotated.ov.Chr_order.csv", sep="")
 write.csv(CNV_P[o,], fn, row.names=F);  system(paste("open ", fn)) 
 
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+# Continuation from      PASS_CNV_2017_collect_for_annotation_followup.R
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+# ---- ---- output only confirmed
+if(1) {
+  ALG = "I"  #  I P
+  if(ALG == "I") xx = CNV_I 
+  if(ALG == "P") xx = CNV_P 
+  
+  uPos = 3e8*xx[,"Chr"] + xx[,"Start"]
+  o    = order(uPos);    # xx[o,"Chr"]
+  xx   = xx[o,]
+  xxn  = xx
+  ic   = c("C.Frec.Hap", "C.Sam.Hap", "P.Per.Hap", "P.Frec.Hap", "P.Sam.Hap", "C.Frec.All", "C.Sam.All", "P.Per.All", "P.Frec.All", "P.Sam.All")
+  for(i in ic) {xxn[xxn[,i]==".",i] = 0;  xxn[,i] = as.numeric(xxn[,i])}
+  s0      =  xxn[,"ov_frac"]   > 0; tNA(s0)
+  xxn     =  xxn[s0,]
+  xx      =  xx[ s0,]
+  s.P.Hap = (xxn[,"P.Per.Hap"] < 30) | (xxn[,"P.Frec.Hap"] < 10)
+  s.C.Hap =  xxn[,"C.Sam.Hap"] < 2
+  s1      = s.P.Hap & s.C.Hap; tNA(s1)
+  ip      = c(1,3,6, 8, 11:12, 24:38, 39:44)
+  cbind(xx[,ip], s1, s.P.Hap, s.C.Hap)
+  cbind(xx[s1,ip])
+  fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.", ALG, "..KSA.Annotated.ov.Chr_order.rare.csv", sep="")
+  write.csv(xx[s1,], fn, row.names=F);  system(paste("open ", fn)) 
+} ## ---- used to produce output spreadsheets
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+# ---- ---- output all with selection flags
+if(1) {
+  ALG = "I"  #  I P
+  if(ALG == "I") xx = CNV_I 
+  if(ALG == "P") xx = CNV_P 
+  
+  uPos = 3e8*xx[,"Chr"] + xx[,"Start"]
+  o    = order(uPos);    # xx[o,"Chr"]
+  xx   = xx[o,]
+  xxn  = xx
+  ic   = c("C.Frec.Hap", "C.Sam.Hap", "P.Per.Hap", "P.Frec.Hap", "P.Sam.Hap", "C.Frec.All", "C.Sam.All", "P.Per.All", "P.Frec.All", "P.Sam.All")
+  for(i in ic) {xxn[xxn[,i]==".",i] = 0;  xxn[,i] = as.numeric(xxn[,i])}
+  s0      =  xxn[,"ov_frac"]   > 0; tNA(s0)
+  s.P.Hap = (xxn[,"P.Per.Hap"] < 30) | (xxn[,"P.Frec.Hap"] < 10)
+  s.C.Hap =  xxn[,"C.Sam.Hap"] < 2
+  s1      = s0 & s.P.Hap & s.C.Hap; tNA(s1)
+  ip      = c(1,3,6, 8, 11:12, 24:38, 39:44)
+  cbind(xx[, ip], s1, s0, s.P.Hap, s.C.Hap)[1:5,]
+  xx      = cbind(xx, s1, s0, s.P.Hap, s.C.Hap)
+  if(0) {
+    fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.", ALG, "..KSA.Annotated.ov.Chr_order.rare_flags.csv", sep="")
+    write.csv(xx, fn, row.names=F);  system(paste("open ", fn)) 
+  } ## ---- output spreadsheet
+}
+CNV_flg = xx ## CNVI_I/P with confirmation and common cnv flags
+## ----------------------------------------------------------------------  make CNV vs exposure comparisons
+if(0) {
+  # this is table with CNVs found but not individually verified, checked with multiple software, checked for pop. frequency, or manually curated
+  # ---- get names of chips with CNVs from CNV_s
+  cuts               = CNV_cuts[[2]]
+  cuts$Confidence[1] = 1200
+  
+  s                = PASS_CNV.select_CNV(CNV_s, cuts)
+  x                = PASS_CNV.remove_AB(CNV_s[s, "Sample_Group"]);  length(x); 
+  sample_names     = unique(x); length(sample_names);                                     # ---- names of individuals (chips) with CNVs
+  # ---- create two tables, _all & _CNV
+  s                = u_Summary_report[,"pass_QC"]  &  u_Summary_report[,"Collaborator.Participant"] != "NA12878"    # check for duplicates, none ## sort(tNA(u_Summary_report[s,"Collaborator.Participant"]))
+  xx_all           = PASS_CNV.pheno_table_u_Summary_report(u_Summary_report, s, fn="")
+  s                = s & u_Summary_report[,"Collaborator.Participant"] %in% sample_names
+  xx_CNV           = PASS_CNV.pheno_table_u_Summary_report(u_Summary_report, s, fn="")
+  # ---- align tables, _all & _CNV
+  m = match(unlist(dimnames(xx_CNV)[1]), unlist(dimnames (xx_all)[1]))
+  x = rep(0, dim(xx_all)[1])
+  x[m] = xx_CNV[,"Total"]
+  xx = cbind(xx_all, CNV=x)
+  xx = cbind(xx, ratio=(xx[,"CNV"])/(xx[,"Total"]))
+  xx
+} ## ---- CNV discovery rate per phenotype  --> copy of old
+
+if(1) {
+  if(0) {
+    cuts             = CNV_cuts[[1]]
+    s                = PASS_CNV.select_CNV(CNV_flg, cuts)
+    x                = PASS_CNV.remove_AB(CNV_flg[s, "Sample_Group"]);  length(x); 
+    sample_names     = unique(x); length(sample_names);                                     # ---- names of individuals (chips) with CNVs
+  } ## ---- no longer relevant
+  if(0) {
+    # ---- create two tables, _all & _CNV
+    sample_names     = unique(CNV_flg[, "Sample_Group"]); length(sample_names);                                     # ---- names of individuals (chips) with CNVs
+    s                = u_Summary_report[,"pass_QC"]  &  u_Summary_report[,"Collaborator.Participant"] != "NA12878"    # check for duplicates, none ## x = u_Summary_report[s,"Collaborator.Participant"]; length(x);  length(unique(x))
+    xx_all           = PASS_CNV.pheno_table_u_Summary_report(u_Summary_report, s, fn="")
+    s                = s & u_Summary_report[,"Collaborator.Participant"] %in% sample_names
+    xx_CNV           = PASS_CNV.pheno_table_u_Summary_report(u_Summary_report, s, fn="")
+  } ## ---- tables for presentation
+  if(0) {
+    m = match(unlist(dimnames(xx_CNV)[1]), unlist(dimnames (xx_all)[1]))
+    x = rep(0, dim(xx_all)[1])
+    x[m] = xx_CNV[,"Total"]
+    xx = cbind(xx_all, CNV=x)
+    xx = cbind(xx, ratio=(xx[,"CNV"])/(xx[,"Total"]))
+    xx
+  }  # ---- align tables, _all & _CNV and show discovery ratio per phenotype
+  
+  #    Collaborator.Participant             Demise.Type                          Specimen.Type Call.Rate Batch pass_QC E_Alc E_Smk
+  # ---- select names of samples that carry CNVs
+  s                = T
+  s                = CNV_flg[,"s1"]
+  sample_names     = unique(CNV_flg[s, "Sample_Group"]); length(sample_names);                                     # ---- names of individuals (chips) with CNVs
+  # ---- select unique samples with Exposure
+  u_T              = u_Summary_report
+  s_u              = u_T[,"pass_QC"]  &  u_T[,"Collaborator.Participant"] != "NA12878";    # check for duplicates, none ## x = u_T[s,"Collaborator.Participant"]; length(x);  length(unique(x))
+  u_T              = u_T[s_u,]
+  if(0) {
+    for(iPheno in c("E_Alc","E_Smk")) {
+      s                = !is.na(u_T[,iPheno])
+      print( tNA(u_T[  ,iPheno]) )
+      print( tNA(u_T[s ,iPheno]) )
+    }
+  } ## ---- check exposure distribution
+  ## ---- build table
+  u_T             = u_T[!is.na(u_T[,"E_Alc"]),]        # both phenotypes are missing always together
+  dAlc_EXP        = u_T[,"E_Alc"] > 2;  tNA(dAlc_EXP)
+  dSmk_EXP        = u_T[,"E_Smk"] > 2;  tNA(dSmk_EXP)
+  dual_EXP        = 2*as.integer(dAlc_EXP) + as.integer(dSmk_EXP)
+  dEXP_m          = cbind(dAlc_EXP, dSmk_EXP, dual_EXP)
+  dEXP_m_names    = c("Alchohol","Smoking","Dual")
+  s_CNV            = u_T[,"Collaborator.Participant"] %in% sample_names;  tNA(s_CNV)
+  for(i in 1:3) {
+    cat(dEXP_m_names[i], "-------------------------------","\n")
+    s_EXP            = dEXP_m[,i]
+    print(table(s_CNV, s_EXP))
+    if(i<3) print(fisher.test(table(s_CNV, s_EXP)))
+  }
+  
+  if(0) {
+    s_EXP            = dAlc_EXP
+    cbind(s_CNV, s_EXP, u_T[,c("E_Alc","E_Smk")], x)[1:25,]
+    table(s_CNV, s_EXP)
+    fisher.test(table(s_CNV, s_EXP))
+  } # -- different way to do table
+  if(0) {
+    s                = T
+    s                = CNV_flg[,"s0"]
+    sample_names     = unique(CNV_flg[s, "Sample_Group"]); length(sample_names);                                     # ---- names of individuals (chips) with CNVs
+    # ---- select unique samples with Exposure
+    u_T              = u_Summary_report
+    s_u              = u_T[,"pass_QC"]  &  u_T[,"Collaborator.Participant"] != "NA12878";    # check for duplicates, none ## x = u_T[s,"Collaborator.Participant"]; length(x);  length(unique(x))
+    u_T              = u_T[s_u,]
+    s_CNV            = u_T[,"Collaborator.Participant"] %in% sample_names;  tNA(s_CNV)
+    s                = is.na(u_T[,"E_Alc"])
+    tNA(s_CNV)
+    tNA(s_CNV[s])
+  } ## ---- table usin s0 (only confirmed, not rare) instead of s1
+  
+} ## ---- CNV discovery rate per phenotype
+
+# 1247 HapMap samples, 575/.4611 = 1247.018
+# Looks like I should rerun tables with an AND for partial coverage CNVs
+
+## ----------------------------------------------------------------------  2019_04_25 notes: cuts used for analysis
+if(0) {
+  # ---- ---- from PASS_CNV_2017_collect_for_annotation.R
+  # ---- Illumina
+  s = T
+  s = s & xx[,       "Chr"] %in%   1:22;  tNA(s)
+  s = s & xx[,     "Value"] !=    2;  tNA(s)
+  s = s & xx[,"Confidence"] >   800;  tNA(s)
+  # ---- PennCNV
+  s = T
+  s = s & xx[,       "Chr"] %in%   1:22;  tNA(s)
+  s = s & xx[,     "Value"] !=    2;  tNA(s)
+  s = s & xx[, "Confidence"] >   200;  tNA(s)
+  # ---- 
+  # For PennCNV the variable is conf=
+  #   
+  #   I have separae annotation from Klaus for CNV_I, CNV_P (Illumina, PennCNV).  
+  # Overlap is determined by PASS_CNV_2017_collect_for_annotation_followup.R
+  # 
+  # CNV_I[1:10, c("Sample_Group", "Chr", "Start", "End","Size", "ov_size", "ov_frac", "ov_size_w", "ov_frac_w", "ov_n", "ov_ID")]
+  # 
+  # Annotation from Klaus:
+  #   ic   = c("C.Frec.Hap", "C.Sam.Hap", "P.Per.Hap", "P.Frec.Hap", "P.Sam.Hap", "C.Frec.All", "C.Sam.All", "P.Per.All", "P.Frec.All", "P.Sam.All")
+  # C/P          --> complete / partial
+  # Freq/Sam/Per --> Frequency / # of samples / Percentage coverage
+  #   Hap/All      --> Hapmap 1247 / All 10k samples
+}
+## ----------------------------------------------------------------------  
 
 
 # ------------------------------------------------ Analysis
