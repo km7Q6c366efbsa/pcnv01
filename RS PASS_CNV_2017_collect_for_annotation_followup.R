@@ -155,7 +155,7 @@ o = order(uPos);    # CNV_P[o,"Chr"]
 fn = paste(Results_dir_local, "2018_07_Klaus_Annotations/v00_2018_08_27_Cuts.P..KSA.Annotated.ov.Chr_order.csv", sep="")
 write.csv(CNV_P[o,], fn, row.names=F);  system(paste("open ", fn)) 
 
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+# ==== ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 # Continuation from      PASS_CNV_2017_collect_for_annotation_followup.R 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 # ---- ---- output only confirmed
